@@ -46,6 +46,11 @@ public class OrderRepository {
         order.add(orderId);
         orderToPartnerDB.put(partnerId, order);
 
+        //increment alongside in partner order by 1
+        DeliveryPartner partnerOrder = partnerDB.get(partnerId);
+        int noOfOrders = partnerOrder.getNumberOfOrders();
+        partnerOrder.setNumberOfOrders(noOfOrders+1);
+
         //Now order has been assigned
         assignedOrderDB.put(orderId, partnerId);
     }
@@ -58,6 +63,7 @@ public class OrderRepository {
     public DeliveryPartner getPartnerById(String partnerId)
     {
         DeliveryPartner deliveryPartner = partnerDB.get(partnerId);
+
         return deliveryPartner;
     }
 
@@ -90,15 +96,15 @@ public class OrderRepository {
 
     public Integer getCountOfUnassignedOrders(){
 
-        Integer unassignedOrder = 0;
+        Integer unassignedOrder = orderDB.size() - assignedOrderDB.size();
 
-        for(String order : orderDB.keySet())
-        {
-            if(!assignedOrderDB.containsKey(order))
-            {
-                unassignedOrder++;
-            }
-        }
+//        for(String order : orderDB.keySet())
+//        {
+//            if(!assignedOrderDB.containsKey(order))
+//            {
+//                unassignedOrder++;
+//            }
+//        }
 
         return unassignedOrder;
     }
@@ -186,6 +192,11 @@ public class OrderRepository {
         if(assignedOrderDB.containsKey(orderId))
         {
             String partnerId = assignedOrderDB.get(orderId);
+
+            //decrement alongside in partner order by 1
+            DeliveryPartner partnerOrder = partnerDB.get(partnerId);
+            int noOfOrders = partnerOrder.getNumberOfOrders();
+            partnerOrder.setNumberOfOrders(noOfOrders-1);
 
             //delete from assigned orders
             assignedOrderDB.remove(orderId);
